@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sexy News Aggregator</title>
+  <style>
+    :root{
+      --bg1:#0f172a; /* deep navy */
+      --bg2:#08121a; /* darker */
+      --accent:#ff6b6b; /* coral */
+      --accent2:#7c5cff; /* violet */
+      --muted:rgba(255,255,255,0.75);
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:18px;
+      --card-radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(124,92,255,0.12), transparent),
+                  radial-gradient(900px 500px at 90% 80%, rgba(255,107,107,0.08), transparent),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--muted);
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+      gap:24px;
+      overflow:hidden;
+    }
+
+    /* subtle floating blobs */
+    .blob{position:absolute;border-radius:50%;filter:blur(50px);opacity:0.5;mix-blend-mode:screen}
+    .blob.b1{width:500px;height:500px;left:-120px;top:-60px;background:linear-gradient(45deg,var(--accent),transparent)}
+    .blob.b2{width:420px;height:420px;right:-140px;bottom:-80px;background:linear-gradient(45deg,var(--accent2),transparent)}
+
+    .wrap{
+      width:100%;max-width:1100px;display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:start;
+      z-index:2;
+    }
+
+    /* left column */
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      backdrop-filter: blur(8px) saturate(120%);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .brand{
+      display:flex;gap:12px;align-items:center;margin-bottom:12px
+    }
+    .logo{
+      width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:20px;box-shadow:0 8px 20px rgba(124,92,255,0.15)
+    }
+    h1.title{margin:0;font-size:20px;line-height:1;color:white}
+    p.lead{margin:4px 0 14px;color:rgba(255,255,255,0.7);font-size:13px}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:10px 14px;border-radius:12px;color:var(--muted);cursor:pointer;font-weight:600;transition:all .22s;backdrop-filter: blur(6px)}
+    .btn:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(2,6,23,0.45)}
+
+    .search{
+      margin-top:16px;display:flex;gap:8px;align-items:center
+    }
+    .search input{flex:1;padding:12px;border-radius:12px;border:0;background:rgba(255,255,255,0.02);color:var(--muted);outline:none}
+
+    /* right column */
+    .feed{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-content:start;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--card-radius);padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(2,6,23,0.45);transition:transform .26s,box-shadow .26s;transform-origin:center;
+      display:flex;flex-direction:column;gap:10px;min-height:150px;position:relative;overflow:hidden
+    }
+    .card:hover{transform:translateY(-10px) scale(1.01);box-shadow:0 22px 60px rgba(2,6,23,0.6)}
+    .card .kicker{font-size:12px;color:var(--accent2);font-weight:700}
+    .card h3{margin:0;font-size:16px;color:white}
+    .card p{margin:0;color:rgba(255,255,255,0.7);font-size:13px}
+    .meta{display:flex;gap:8px;align-items:center;font-size:12px;color:rgba(255,255,255,0.6)}
+
+    /* image strip */
+    .thumb{height:86px;border-radius:10px;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s}
+    .card:hover .thumb img{transform:scale(1.08)}
+
+    /* animated underline */
+    .animated-underline{position:relative;display:inline-block}
+    .animated-underline:after{content:"";position:absolute;left:0;bottom:-6px;height:4px;width:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(.02);transform-origin:left;transition:transform .45s}
+    .animated-underline:hover:after{transform:scaleX(1)}
+
+    /* small footer */
+    .footer{margin-top:14px;font-size:12px;color:rgba(255,255,255,0.5)}
+
+    /* responsive */
+    @media (max-width:880px){.wrap{grid-template-columns:1fr;}}
+
+    /* tiny flourish - cursor-follow glow */
+    .cursor-glow{position:fixed;pointer-events:none;z-index:3;width:140px;height:140px;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:0.6}
+  </style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="cursor-glow" id="glow"></div>
+
+  <div class="wrap">
+    <aside class="panel">
+      <div class="brand">
+        <div class="logo">N</div>
+        <div>
+          <h1 class="title">Newsly — <span style="font-weight:500;color:var(--muted)">Curated &amp; Sexy</span></h1>
+          <p class="lead">Your bite-sized, stylish feed. Hover the cards, use controls to shuffle or filter.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="shuffleBtn">Shuffle Feed</button>
+        <button class="btn" id="themeBtn">Toggle Accent</button>
+        <button class="btn" id="sampleBtn">Load Sample</button>
+      </div>
+
+      <div class="search">
+        <input id="q" placeholder="Search headlines..." />
+        <button class="btn" id="searchBtn">Search</button>
+      </div>
+
+      <div class="footer">Tip: Hover cards for tilt and image zoom. Click any headline to expand.</div>
+    </aside>
+
+    <main>
+      <div class="feed" id="feed">
+        <!-- cards injected by JS -->
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // sample data
+    const sample = [
+      {kicker:'World',title:'Breakthrough climate talks reach surprising compromise',desc:'Delegates agreed to a phased approach with immediate funding for vulnerable nations.',img:'https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&q=60&fit=crop&w=800'},
+      {kicker:'Tech',title:'Tiny AI startup reveals a new low-power model for phones',desc:'The model runs efficiently without cloud calls and promises private on-device intelligence.',img:'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&q=60&fit=crop&w=800'},
+      {kicker:'Design',title:'Urban gardens transform rooftops into food-producing ecosystems',desc:'A community project shows how cities can reclaim unused spaces for growing food.',img:'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&q=60&fit=crop&w=800'},
+      {kicker:'Business',title:'Retailers experiment with 2-hour sustainable deliveries',desc:'Carbon-aware routing lowered emissions while keeping customers happy.',img:'https://images.unsplash.com/photo-1515162305288-7a9b8b57a3a8?auto=format&q=60&fit=crop&w=800'},
+      {kicker:'Culture',title:'Indie filmmakers use phones to shoot festival favorites',desc:'Cheap tools, creative teams: small-budget films win big.',img:'https://images.unsplash.com/photo-1508898578281-774ac4893a49?auto=format&q=60&fit=crop&w=800'}
+    ];
+
+    const feedEl = document.getElementById('feed');
+
+    function makeCard(item){
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="kicker">${item.kicker}</div>
+        <div class="thumb"><img src="${item.img}" alt="" loading="lazy"></div>
+        <h3 class="animated-underline">${item.title}</h3>
+        <p>${item.desc}</p>
+        <div class="meta"><span>2h ago</span><span>•</span><span>Read</span></div>
+      `;
+
+      // click to expand
+      el.addEventListener('click', () => {
+        if(el.classList.contains('expanded')){
+          el.classList.remove('expanded');
+          el.style.transform = '';
+          el.style.gridColumn = '';
+          el.style.minHeight = '150px';
+        } else {
+          // expand into a larger card
+          document.querySelectorAll('.card.expanded').forEach(c=>{c.classList.remove('expanded');c.style.gridColumn='';c.style.minHeight='150px'});
+          el.classList.add('expanded');
+          el.style.gridColumn = '1 / -1';
+          el.style.minHeight = '280px';
+          el.style.transform = 'translateY(-6px) scale(1.01)';
+        }
+      });
+
+      // small tilt effect based on pointer
+      el.addEventListener('pointermove', (ev)=>{
+        const r = el.getBoundingClientRect();
+        const px = (ev.clientX - r.left)/r.width - 0.5;
+        const py = (ev.clientY - r.top)/r.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${ -py*6 }deg) rotateY(${ px*8 }deg)`;
+      });
+      el.addEventListener('pointerleave', ()=>{ if(!el.classList.contains('expanded')) el.style.transform=''; });
+
+      return el;
+    }
+
+    function loadSample(){
+      feedEl.innerHTML='';
+      sample.forEach(it=>feedEl.appendChild(makeCard(it)));
+    }
+
+    document.getElementById('sampleBtn').addEventListener('click', loadSample);
+    document.getElementById('shuffleBtn').addEventListener('click', ()=>{
+      const arr = Array.from(feedEl.children);
+      for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));feedEl.insertBefore(arr[j],arr[i]);}
+    });
+
+    // simple search
+    document.getElementById('searchBtn').addEventListener('click', ()=>{
+      const q = document.getElementById('q').value.toLowerCase().trim();
+      if(!q) return loadSample();
+      Array.from(feedEl.children).forEach(card=>{
+        const text = card.innerText.toLowerCase();
+        card.style.opacity = text.includes(q)?'1':'0.2';
+        card.style.pointerEvents = text.includes(q)?'auto':'none';
+      });
+    });
+
+    // accent toggle to switch palette
+    document.getElementById('themeBtn').addEventListener('click', ()=>{
+      document.documentElement.style.setProperty('--accent', getComputedStyle(document.documentElement).getPropertyValue('--accent2'));
+      document.documentElement.style.setProperty('--accent2', '#34d399');
+    });
+
+    // cursor glow follows pointer
+    const glow = document.getElementById('glow');
+    window.addEventListener('pointermove', e=>{
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+      glow.style.background = `radial-gradient(circle at 30% 30%, rgba(255,107,107,0.12), rgba(124,92,255,0.08) 30%, transparent 60%)`;
+    });
+
+    // initial
+    loadSample();
+  </script>
+</body>
+</html>

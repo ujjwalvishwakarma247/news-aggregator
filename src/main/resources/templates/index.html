@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Latest News</title>
+  <style>
+    /* Background & Layout */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #222;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Filter Buttons */
+    .filter-buttons {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .filter-buttons button {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0.6rem 1.3rem;
+      margin: 0.3rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-buttons button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .filter-buttons button.active {
+      background: #28a745;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    li {
+      background: #ffffffdd;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    li:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    a {
+      display: block;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #2c3e50;
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: #0077cc;
+    }
+
+    p {
+      margin: 0.3rem 0;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    /* Dynamic category badge colors */
+    .badge.News { background: #007bff; }
+    .badge.Sports { background: #28a745; }
+    .badge.Entertainment { background: #e83e8c; }
+    .badge.Technology { background: #17a2b8; }
+    .badge.Politics { background: #6f42c1; }
+    .badge.Other { background: #fd7e14; }
+
+    /* Content section hidden by default */
+    .content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.3s ease;
+    }
+
+    li.expanded .content {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 1rem;
+    }
+
+    .content p {
+      font-size: 0.95rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    /* Decorative background shapes */
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .shape.one {
+      width: 400px;
+      height: 400px;
+      background: #007bff;
+      top: -100px;
+      left: -150px;
+    }
+
+    .shape.two {
+      width: 300px;
+      height: 300px;
+      background: #e83e8c;
+      bottom: -120px;
+      right: -100px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      li {
+        padding: 1rem;
+      }
+
+      a {
+        font-size: 1.1rem;
+      }
+
+      .content p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shape one"></div>
+  <div class="shape two"></div>
+
+  <h1>Latest News</h1>
+
+  <!-- Filter Buttons -->
+  <div class="filter-buttons">
+    <button class="active" onclick="filterNews('all')">All</button>
+    <button onclick="filterNews('Sports')">Sports</button>
+    <button onclick="filterNews('Entertainment')">Entertainment</button>
+    <button onclick="filterNews('Politics')">Politics</button>
+    <button onclick="filterNews('Technology')">Tech</button>
+    <button onclick="filterNews('Other')">Other</button>
+  </div>
+
+  <ul>
+    <li th:each="n : ${link}" th:attr="data-category=${n.categories}" onclick="this.classList.toggle('expanded')">
+      <a th:text="${n.title}" th:href="${n.link}" target="_blank">News Title</a>
+      <p th:text="${n.author}">Author Name</p>
+      <div class="content">
+        <p th:text="'Content: ' + ${n.contents}">Content goes here...</p>
+      </div>
+      <span class="badge" th:text="${n.categories}" th:classappend=" ' ' + ${n.categories}">Category</span>
+    </li>
+  </ul>
+
+  <script>
+    function filterNews(category) {
+      const items = document.querySelectorAll("ul li");
+      const buttons = document.querySelectorAll(".filter-buttons button");
+
+      // Highlight active button
+      buttons.forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+
+      // Show/hide news
+      items.forEach(item => {
+        const itemCategory = item.getAttribute("data-category");
+        if (category === "all" || itemCategory === category) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

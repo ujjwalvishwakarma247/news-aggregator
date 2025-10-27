@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff6b6b, #7c5cff);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: fadeInDown 1s ease forwards;
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      animation: fadeInUp 1.2s ease forwards;
+    }
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: 0.3s;
+    }
+
+    a:hover {
+      background: #fff;
+      color: #7c5cff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    @keyframes fadeInDown {
+      from {opacity: 0; transform: translateY(-30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* floating animation */
+    .floating {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    .floating:nth-child(1) {
+      top: 10%;
+      left: 15%;
+      animation-delay: 0s;
+    }
+    .floating:nth-child(2) {
+      bottom: 15%;
+      right: 20%;
+      animation-delay: 3s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating"></div>
+  <div class="floating"></div>
+
+  <h1>Welcome to News Aggregator</h1>
+  <p><a href="/news">Go to Latest News</a></p>
+
+  <script>
+    // cursor glow effect
+    const glow = document.createElement('div');
+    glow.style.position = 'fixed';
+    glow.style.width = '150px';
+    glow.style.height = '150px';
+    glow.style.borderRadius = '50%';
+    glow.style.pointerEvents = 'none';
+    glow.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3), transparent 60%)';
+    glow.style.mixBlendMode = 'screen';
+    glow.style.zIndex = '0';
+    document.body.appendChild(glow);
+
+    document.addEventListener('mousemove', (e) => {
+      glow.style.left = e.pageX - 75 + 'px';
+      glow.style.top = e.pageY - 75 + 'px';
+    });
+  </script>
+</body>
+</html>
