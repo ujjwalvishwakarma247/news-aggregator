@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: news-aggregator
+    env: java
+    buildCommand: ./mvnw clean package
+    startCommand: java -jar target/news-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: 24
