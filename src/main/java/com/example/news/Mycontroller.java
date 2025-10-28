@@ -38,6 +38,6 @@ public class Mycontroller {
     public String news(Model m){
        List<NewsItems> news = service.fetchNewFromRss("https://timesofindia.indiatimes.com/rssfeedstopstories.cms");
        m.addAttribute("link", news);
-        return "index";
+        return "newsall";
     }
 }
