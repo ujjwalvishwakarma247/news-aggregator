@@ -23,7 +23,7 @@ public  class RssfeedService {
     @Autowired
     private Repositorynews repo;
 
-    // 🔁 This method will run every 10 minutes automatically
+    //  This method will run every 10 minutes automatically
     @Scheduled(fixedRate = 600000) // 10 minutes = 600000 milliseconds
     public List<NewsItems> fetchNewFromRss(String rssUrl){
         List<NewsItems> newsList = new ArrayList<>();
