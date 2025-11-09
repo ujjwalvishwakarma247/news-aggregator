@@ -1,5 +1,5 @@
-# Use official Java runtime
-FROM openjdk:21-jdk
+# Use official Java 21 runtime
+FROM eclipse-temurin:21-jdk
 
 # Set working directory
 WORKDIR /app
