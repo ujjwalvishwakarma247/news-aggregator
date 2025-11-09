@@ -1,14 +1,20 @@
-# Use official Java 21 runtime
+# Use Eclipse Temurin (OpenJDK 21)
 FROM eclipse-temurin:21-jdk
 
 # Set working directory
 WORKDIR /app
 
-# Copy project JAR file
-COPY target/news-0.0.1-SNAPSHOT.jar app.jar
+# Copy Maven wrapper and project files
+COPY . .
 
-# Expose port 8080
+# Make sure mvnw is executable (important on Windows)
+RUN chmod +x mvnw
+
+# Build the project without tests
+RUN ./mvnw clean package -DskipTests
+
+# Expose the app port
 EXPOSE 8080
 
-# Run the JAR
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the JAR file
+ENTRYPOINT ["java", "-jar", "target/news-0.0.1-SNAPSHOT.jar"]
