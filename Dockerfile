@@ -1,5 +1,5 @@
 # Use official Java runtime
-FROM openjdk:24-jdk
+FROM openjdk:21-jdk
 
 # Set working directory
 WORKDIR /app
