@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public  class RssfeedService {
     @Autowired
     private Repositorynews repo;
 
+    // 🔁 This method will run every 10 minutes automatically
+    @Scheduled(fixedRate = 600000) // 10 minutes = 600000 milliseconds
     public List<NewsItems> fetchNewFromRss(String rssUrl){
         List<NewsItems> newsList = new ArrayList<>();
         try {
